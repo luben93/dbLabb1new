@@ -1,0 +1,45 @@
+CREATE TABLE `labb1a`.`album` (
+  `albumid` VARCHAR(45) NOT NULL,
+  `genre` VARCHAR(45) NOT NULL,
+  `rating` VARCHAR(45) NULL,
+  `review` VARCHAR(255) NULL,
+  PRIMARY KEY (`albumid`));
+  
+  CREATE TABLE `labb1a`.`artist` (
+  `idartist` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idartist`));
+  
+  CREATE TABLE `labb1a`.`album_artist` (
+  `album` VARCHAR(45) NOT NULL,
+  `artist` VARCHAR(45) NULL,
+  PRIMARY KEY (`album`),
+  INDEX `artist_idx` (`artist` ASC),
+  CONSTRAINT `album`
+    FOREIGN KEY (`album`)
+    REFERENCES `labb1a`.`album` (`albumid`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  CONSTRAINT `artist`
+    FOREIGN KEY (`artist`)
+    REFERENCES `labb1a`.`artist` (`idartist`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE);
+  
+  
+  
+  USE `labb1a`;
+DROP procedure IF EXISTS `checkArtist`;
+
+DELIMITER $$
+USE `labb1a`$$
+CREATE PROCEDURE checkArtist (newArtist varchar(45))
+modifies sql data
+BEGIN
+	if not exists (select * from artist=newArtist) then
+		insert into artist (Artist) values (newArtist);
+	end if;
+END$$
+
+DELIMITER ;
+
+  

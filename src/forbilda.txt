@@ -1,0 +1,351 @@
+package controller;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/**
+ * SQLupdate exectues the update statment
+ * 
+ * @author luben and steffe
+ * 
+ */
+public class SQLupdate {
+
+	private Connection con;
+
+	public SQLupdate(Connection con) {
+		this.con = con;
+		// TODO Auto-generated constructor stub
+	}
+
+	public void execute(String query) throws SQLException {
+
+		Statement stmt = null;
+		try {
+			// Execute the SQL statement
+			stmt = con.createStatement();
+			stmt.executeUpdate(query);
+
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+	}
+
+}
+
+
+package controller;
+
+public class Music {
+	private String artist, album, genre, rating, review;
+
+	public Music() {
+		System.out.println("just smile and wave boys :)");
+	}
+
+	public Music(String artist, String album, String genre, String rating,
+			String review) {
+		this.album = album;
+		this.artist = artist;
+		this.genre = genre;
+		this.rating = rating;
+		this.review = review;
+	}
+
+	public void setAlbum(String album) {
+		this.album = album;
+	}
+
+	public void setArtis(String artist) {
+		this.artist = artist;
+	}
+
+	public void setGenre(String genre) {
+		this.genre = genre;
+	}
+
+	public void setReview(String review) {
+		this.review = review;
+	}
+
+	public void setRating(String rating) {
+		this.rating = rating;
+	}
+
+	public String getAlbum() {
+		return album;
+	}
+
+	public String getArtist() {
+		return artist;
+	}
+
+	public String getGenre() {
+		return genre;
+	}
+
+	public String getRating() {
+		return rating;
+	}
+
+	public String getreview() {
+		return review;
+	}
+
+	public String toString() {
+		String out = null;
+		out = album + " " + artist + " " + genre + " " + rating + " " + review;
+		return out;
+	}
+	
+	public String[] getArray(){
+		String[] temp =new String[5];
+		//for(int i=0;i<5;i++){
+			temp[0]=album;
+			temp[1]=artist;
+			temp[2]=genre;
+			temp[3]=rating;
+			temp[4]=review;
+		//}
+		
+		return temp;
+	}
+
+}
+
+
+package controller;
+
+import java.awt.EventQueue;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import view.View;
+
+/**
+ * the actuall controller, handels all comunication between the view and the
+ * modell
+ * 
+ * @author luben and steffe
+ * 
+ */
+public class driver {
+	// private ArrayList<String> test;
+	private View frame;
+	private ArrayList<Music> results;
+	private ArrayList<String> colname;
+	private String ip = "83.250.249.187", user = "clientuser", pwd = "12345";
+
+	/**
+	 * start is the equivalent of the constructor
+	 */
+	public void start() {
+
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					frame = new View(driver.this);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					javax.swing.JOptionPane.showMessageDialog(null,
+							"Could not start program, " + e.toString());
+					// e.printStackTrace();// test only
+				}
+			}
+		});
+	}
+
+	/**
+	 * update contains a insert SQL statment
+	 * 
+	 * @param artist
+	 * @param album
+	 * @param genre
+	 * @throws NullValueExecption
+	 *             if artist or album is NULL
+	 */
+	public void update(String artist, String album, String genre)
+			throws NullValueExecption {
+		if (!artist.equals("") && !album.equals("")) {
+			connect("insert into music (artist,album,genre" + ") values ('"
+					+ artist + "', '" + album + "', '" + genre + "')", "update");
+
+		} else {
+			System.out.println("hej");
+			throw new NullValueExecption("Null is not an acceteble value here");
+		}
+	}
+
+	/**
+	 * query contains a select SQL statment
+	 * 
+	 * @param value1
+	 *            is the name of the column
+	 * @param value2
+	 *            is the search query
+	 */
+	public void query(String value1, String value2) {
+		connect("Select * FROM music where " + value1 + " like '" + value2
+				+ "%'", "query");
+
+	}
+
+	/**
+	 * selects all
+	 */
+	public void selectAll() {
+		connect("Select * FROM music ", "query");
+
+	}
+
+	/**
+	 * updates rating
+	 * 
+	 * @param rating
+	 * @param album
+	 */
+	public void updateRating(String rating, String album) {
+		connect("update music set rating = '" + rating + "' where artist ='"
+				+ album + "'", "update");
+
+	}
+
+	//@SuppressWarnings("unchecked")
+	public ArrayList<Music> getLatestQueryResults() {
+		return (ArrayList<Music>) results.clone();
+	}
+
+
+	/**
+	 * connect, connects to a database
+	 * 
+	 * @param sql
+	 * @param type
+	 *            is either update or query depending on the nature of the
+	 *            SQLstament
+	 */
+	public void connect(String sql, String type) {
+		String server = "jdbc:mysql://" + ip + ":3306/" + "labb1"
+				+ "?UseClientEnc=UTF8";
+
+		Connection con = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			con = DriverManager.getConnection(server, user, pwd);
+			// System.out.println("Connected!");
+
+			switch (type) {
+			case "update":
+				SQLupdate update = new SQLupdate(con);
+				update.execute(sql);
+				break;
+			case "query":
+				SQLquery query = new SQLquery(con);
+				query.execute(sql);
+				results = query.getResults();
+				break;
+			}
+
+		} catch (Exception e) {
+			javax.swing.JOptionPane.showMessageDialog(null, "Database error, "
+					+ e.toString());
+			// e.printStackTrace();
+		} finally {
+			try {
+				if (con != null) {
+					con.close();
+					// System.out.println("Connection closed.");
+				}
+			} catch (SQLException e) {
+				javax.swing.JOptionPane.showMessageDialog(null,
+						"Database error, " + e.toString());
+			}
+		}
+
+	}
+
+}
+
+
+package controller;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+/**
+ * SQLquery exectues a query and recives the result and puts it in an array as
+ * objects
+ * 
+ * @author luben and steffe
+ * 
+ */
+public class SQLquery {
+	private Connection con;
+	private ArrayList<Music> result;
+
+	public SQLquery(Connection con) {
+		this.con = con;
+		result = new ArrayList<Music>();
+		// TODO Auto-generated constructor stub
+	}
+
+	public ArrayList<Music> execute(String query) throws SQLException {
+
+		Statement stmt = null;
+		try {
+			// Execute the SQL statement
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+
+			// Get the attribute names
+			ResultSetMetaData metaData = rs.getMetaData();
+			int ccount = metaData.getColumnCount();
+			for (int i = 0; i < ccount; i++) {
+				//colname.add(metaData.getColumnName(i));
+			}
+			// Get the attribute values
+			while (rs.next()) {
+				//for (int c = 1; c <= ccount; c++) {
+				//}
+				result.add(new Music(rs.getString(1), rs.getString(2), rs
+						.getString(3), rs.getString(4), rs.getString(5)));
+			}
+
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		 return result;
+	}
+
+	/**
+	 * @return result, the result of the SQL query
+	 */
+	public ArrayList<Music> getResults() {
+		return (ArrayList<Music>) result.clone();
+	}
+
+}
+
+
+package controller;
+
+public class Controller {
+	public static void main (String[] args){
+		driver program=new driver();
+		program.start();
+	}
+		
+		
+		
+}	

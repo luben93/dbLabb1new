@@ -27,7 +27,7 @@ public class SQLqueryArtist {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ArrayList<String> execute(String query) throws SQLException {
+	public ResultSet execute(String query) throws SQLException {
 
 		Statement stmt = null;
 		try {
@@ -56,18 +56,19 @@ public class SQLqueryArtist {
 				stmt.close();
 			}
 		}
-		 return AllArtist;
+		 return result1;
 	}
-	
+	/*
 	public String getArtistAt(int index){
 		return AllArtist.get(index);
 	}
-
+*/
 	/**
 	 * @return result, the result of the SQL query
 	 */
+	/*
 	public ArrayList<String> getAllArtist() {
 		return  AllArtist;
-	}
+	}*/
 
 }

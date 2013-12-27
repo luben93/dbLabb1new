@@ -20,7 +20,7 @@ import model.Artist;
 public class SQLquery {
 	private Connection con;
 	private ArrayList<Album> result;
-	private ResultSet result1;
+	private ResultSet rs;
 
 	public SQLquery(Connection con) {//constructs every query 
 		this.con = con;
@@ -28,36 +28,28 @@ public class SQLquery {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ArrayList<Album> execute(String query) throws SQLException {
+	public ResultSet execute(String query) throws SQLException {
 
 		Statement stmt = null;
 		try {
 			// Execute the SQL statement
-			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(query);
+			stmt = con.createStatement(); 
+			rs = stmt.executeQuery(query);
 
 		
 			
 			result=new ArrayList<Album>();
-			while (rs.next()) {
+			/*while (rs.next()) {
 				result.add(new Album(rs.getString(1), rs.getString(2), rs.getString(3), artist));
 				// create new album outside sqlquery !!!!!!!!!
 				//result.add(new Album(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
-			}
-			result1= rs;
+			}*/
 		} finally {
 			if (stmt != null) {
 				stmt.close();
 			}
 		}
-		 return result;
-	}
-
-	/**
-	 * @return result, the result of the SQL query
-	 */
-	public ArrayList<Album> getResults() {
-		return  result;
+		 return rs;
 	}
 
 }

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import model.Album;
+import model.Artist;
 import view.View;
 
 /**
@@ -160,19 +161,41 @@ public class driver implements DatabaseConnection {
 			// connect("Select * FROM " + Table + " where " + SearchColumn +
 			// " like '" + SearchedText
 			// + "%'", null,null,"query");
-			ResultSet rs;
+			ResultSet rsAl, rsAr;
 			SQLquery query = new SQLquery(con);
 			SQLqueryArtist aquery =new SQLqueryArtist(con);
+	
+			rsAl = query.execute("Select albumid, genre, rating, artist FROM album,  "
+					+ "where "
+					+ SearchColumn
+					+ " like '"
+					+ SearchedText+"'");//fel fel fel, ta enbart album
 			
-		/*/
-			query.execute("Select albumid, genre, rating, artist FROM album, album_artist "
+			
+			rsAr = aquery.execute("Select albumid, artist FROM , album_artist "
 					+ "where "
 					+ SearchColumn
 					+ " like '"
 					+ SearchedText
-					+ "%' AND album.albumid = album_artist.album");
-			//*/
-			results = query.getResults();
+					+ "%' AND album.albumid = album_artist.album");//fel fel fel, ta enbart artister
+			
+			Artist artist=new Artist();
+			while (rsAr.next()) {
+				artist.addArtist(rsAr.getString(1));
+			}
+			
+			while (rsAl.next()) {
+				Artist tempartist=new Artist();
+				//fill temp artist with the correct album Artists
+				results.add(new Album(rsAl.getString(1), rsAl.getString(2), rsAl.getString(3), tempartist));
+			}
+			
+			
+			
+			
+			
+			
+		
 			// rs = query.getResults();
 			// results=new ArrayList<Album>();
 			// while (rs.next()) {
@@ -216,7 +239,7 @@ public class driver implements DatabaseConnection {
 	 * @throws SQLException
 	 */
 
-	// TODO SEARCH F�RST. TYP KLAR MEN SEARCH ?
+	// TODO SEARCH F���RST. TYP KLAR MEN SEARCH ?
 	public void updateRating(String rating, String SelectedRow)
 			throws DatabaseErrorExecption {
 		try {

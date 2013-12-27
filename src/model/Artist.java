@@ -5,18 +5,16 @@ import java.util.ArrayList;
 public class Artist {
 private ArrayList<String> artists;
 
-public Artist(String[] artist){
-	artists= new ArrayList<String>();
-	for(int i=0;i<artist.length;i++){
-		this.artists.add(artist[i]);
-	}
+public Artist(ArrayList<String> artist){
+	//artists= new ArrayList<String>();
+	artists= (ArrayList<String>) artist.clone();
 }
 
 public Artist(){
 	artists= new ArrayList<String>();
 }
 
-public ArrayList<String> getArtist(){
+public ArrayList<String> getAllArtist(){
 	return  (ArrayList<String>) artists.clone();
 }
 

@@ -189,12 +189,6 @@ public class driver implements DatabaseConnection {
 				//fill temp artist with the correct album Artists
 				results.add(new Album(rsAl.getString(1), rsAl.getString(2), rsAl.getString(3), tempartist));
 			}
-			
-			
-			
-			
-			
-			
 		
 			// rs = query.getResults();
 			// results=new ArrayList<Album>();
